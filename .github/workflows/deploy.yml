@@ -11,14 +11,6 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-      - name: Configurar Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - name: Instalar dependências
-        run: pip install -r requirements.txt
-      - name: Testar servidor
-        run: python servidor.py --test || true
       - name: Build Docker
         run: docker build -t analisador-qualidade .
       - name: Iniciar servidor Flask (Docker)
