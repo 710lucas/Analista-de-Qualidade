@@ -14,12 +14,13 @@ jobs:
       - name: Build Docker
         run: docker build -t analisador-qualidade .
       - name: Iniciar servidor Flask (Docker)
-        run: docker run -d --name analisador-qualidade -p 5000:5000 \
-          -e FLASK_ENV=production \
-          -e API_KEY_GEMINI=${{ secrets.API_KEY_GEMINI }} \
-          -e API_KEY_OPENAI=${{ secrets.API_KEY_OPENAI }} \
-          analisador-qualidade
+        run: |
+          docker run -d --name analisador-qualidade -p 5000:5000 \
+            -e FLASK_ENV=production \
+            -e API_KEY_GEMINI="${{ secrets.API_KEY_GEMINI || '' }}" \
+            -e API_KEY_OPENAI="${{ secrets.API_KEY_OPENAI || '' }}" \
+            analisador-qualidade
         env:
           FLASK_ENV: production
-          API_KEY_GEMINI: ${{ secrets.API_KEY_GEMINI }}
-          API_KEY_OPENAI: ${{ secrets.API_KEY_OPENAI }}
+          API_KEY_GEMINI: ${{ secrets.API_KEY_GEMINI || '' }}
+          API_KEY_OPENAI: ${{ secrets.API_KEY_OPENAI || '' }}
