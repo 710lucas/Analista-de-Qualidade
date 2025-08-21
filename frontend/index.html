@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Qualidade de Código</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="https://static.vecteezy.com/system/resources/thumbnails/009/876/398/small/realistic-magnifying-glass-clip-art-free-png.png" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <i class="fas fa-code-branch"></i>
+                <h1>Analisador de Qualidade de Código</h1>
+                <p>Análise automatizada de repositórios GitHub</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Formulário de Análise -->
+            <section class="analysis-form">
+                <div class="form-card">
+                    <h2><i class="fas fa-search"></i> Analisar Repositório</h2>
+                    
+                    <!-- Tabs para alternar entre nova análise e upload -->
+                    <div class="form-tabs">
+                        <button type="button" class="form-tab-btn active" data-form-tab="new">
+                            <i class="fas fa-play"></i> Nova Análise
+                        </button>
+                        <button type="button" class="form-tab-btn" data-form-tab="upload">
+                            <i class="fas fa-upload"></i> Carregar JSON
+                        </button>
+                    </div>
+                    
+                    <!-- Nova Análise -->
+                    <div class="form-tab-content active" id="newAnalysisTab">
+                        <form id="analysisForm">
+                            <div class="input-group">
+                                <label for="repoUrl">URL do Repositório GitHub:</label>
+                                <input type="url" id="repoUrl" placeholder="https://github.com/usuario/repositorio" required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="modelSelect">Modelo de IA:</label>
+                                <div class="model-selector">
+                                    <select id="modelSelect">
+                                        <option value="gemini">Google Gemini 2.0 Flash</option>
+                                        <option value="gpt4-mini">OpenAI GPT-4 Mini</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="apiKey">Chave API (opcional):</label>
+                                <input type="password" id="apiKey" placeholder="Deixe em branco para usar a chave padrão">
+                                <small id="apiKeyHelp">Se não informada, será usada a chave padrão do Gemini</small>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary" id="analyzeBtn">
+                                <i class="fas fa-play"></i>
+                                Iniciar Análise
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Upload de JSON -->
+                    <div class="form-tab-content" id="uploadAnalysisTab">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-file-upload"></i>
+                                <h3>Carregar Análise Anterior</h3>
+                                <p>Arraste um arquivo JSON aqui ou clique para selecionar</p>
+                                <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                                <button type="button" class="btn-secondary" id="selectFileBtn">
+                                    <i class="fas fa-folder-open"></i>
+                                    Selecionar Arquivo
+                                </button>
+                            </div>
+                        </div>
+                        <div class="upload-info" style="margin-top: 15px;">
+                            <small><i class="fas fa-info-circle"></i> Carregue um arquivo JSON de uma análise anterior para visualizar os resultados.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading -->
+            <section class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-card">
+                    <div class="spinner"></div>
+                    <h3>Analisando repositório...</h3>
+                    <p id="loadingStatus">Preparando análise...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resultados -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2><i class="fas fa-chart-line"></i> Resultados da Análise</h2>
+                    <div class="repo-info" id="repoInfo"></div>
+                </div>
+
+                <!-- Dashboard com Métricas -->
+                <div class="metrics-dashboard">
+                    <div class="metric-card security">
+                        <div class="metric-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Segurança</h3>
+                            <div class="metric-value" id="securityScore">-</div>
+                            <div class="metric-details">
+                                <span id="securityIssues">0 vulnerabilidades</span>
+                                <span id="securityFunctions">0 funções sem tratamento</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card performance">
+                        <div class="metric-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Desempenho</h3>
+                            <div class="metric-value" id="performanceScore">-</div>
+                            <div class="metric-details">
+                                <span id="performanceStructures">0 estruturas ineficientes</span>
+                                <span id="performanceFunctions">0 funções longas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card reliability">
+                        <div class="metric-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Confiabilidade</h3>
+                            <div class="metric-value" id="reliabilityScore">-</div>
+                            <div class="metric-details">
+                                <span id="reliabilityErrors">0 problemas de erro</span>
+                                <span id="reliabilityViolations">0 violações de padrão</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card testing">
+                        <div class="metric-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Testes</h3>
+                            <div class="metric-value" id="testingScore">-</div>
+                            <div class="metric-details">
+                                <span id="testingCoverage">0% cobertura</span>
+                                <span id="testingCount">0 testes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <h3>Distribuição de Problemas</h3>
+                        <canvas id="problemsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Qualidade Geral</h3>
+                        <canvas id="qualityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recomendações -->
+                <div class="recommendations-section">
+                    <h3><i class="fas fa-lightbulb"></i> Recomendações</h3>
+                    <div class="recommendations-grid" id="recommendationsGrid">
+                        <!-- Recomendações serão inseridas aqui -->
+                    </div>
+                </div>
+
+                <!-- Detalhes Técnicos -->
+                <div class="details-section">
+                    <h3><i class="fas fa-cogs"></i> Detalhes Técnicos</h3>
+                    <div class="details-tabs">
+                        <button class="tab-btn active" data-tab="security">Segurança</button>
+                        <button class="tab-btn" data-tab="performance">Desempenho</button>
+                        <button class="tab-btn" data-tab="reliability">Confiabilidade</button>
+                        <button class="tab-btn" data-tab="testing">Testes</button>
+                    </div>
+                    <div class="tab-content">
+                        <div id="securityDetails" class="tab-panel active"></div>
+                        <div id="performanceDetails" class="tab-panel"></div>
+                        <div id="reliabilityDetails" class="tab-panel"></div>
+                        <div id="testingDetails" class="tab-panel"></div>
+                    </div>
+                </div>
+
+                <!-- Ações -->
+                <div class="actions-section">
+                    <button class="btn-secondary" id="downloadBtn">
+                        <i class="fas fa-download"></i>
+                        Baixar Relatório JSON
+                    </button>
+                    <button class="btn-primary" id="newAnalysisBtn">
+                        <i class="fas fa-plus"></i>
+                        Nova Análise
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

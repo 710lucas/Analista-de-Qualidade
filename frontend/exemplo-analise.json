@@ -1,0 +1,72 @@
+{
+  "repositorio_url": "https://github.com/exemplo/repositorio-teste",
+  "timestamp": "2025-08-15T10:30:00.000Z",
+  "status": "sucesso",
+  "tempo_execucao": "0:02:15",
+  "analises": {
+    "seguranca": {
+      "nivel_seguranca": "Alto",
+      "quantidade_vulnerabilidades": 2,
+      "quantidade_funcoes_sem_tratamento": 1,
+      "funcoes_sem_tratamento": "validateUserInput(), processPayment()",
+      "vulnerabilidades_sast": "SQL Injection potencial em getUserData(), XSS em displayMessage()",
+      "recomendacoes": [
+        "Implementar validação rigorosa de entrada em todos os formulários",
+        "Utilizar prepared statements para consultas SQL",
+        "Escapar adequadamente dados de saída para prevenir XSS",
+        "Implementar Content Security Policy (CSP)",
+        "Adicionar autenticação de dois fatores"
+      ]
+    },
+    "desempenho": {
+      "nivel_desempenho": "Médio",
+      "quantidade_estruturas_ineficientes": 3,
+      "quantidade_funcoes_longas": 5,
+      "estruturas_ineficientes": "Uso de ArrayList em loops aninhados, consultas N+1, carregamento síncrono de imagens",
+      "funcoes_longas": "processLargeDataset() - 250 linhas, generateReport() - 180 linhas, validateComplexForm() - 120 linhas",
+      "recomendacoes": [
+        "Refatorar funções longas em métodos menores e mais específicos",
+        "Implementar cache de dados para consultas frequentes",
+        "Otimizar consultas ao banco de dados usando JOIN ao invés de múltiplas consultas",
+        "Usar carregamento assíncrono para recursos pesados",
+        "Implementar lazy loading para componentes não críticos"
+      ]
+    },
+    "confiabilidade": {
+      "nivel_confiabilidade": "Baixo",
+      "quantidade_problemas_erros": 8,
+      "quantidade_violacoes_padroes": 12,
+      "problemas_tratamento_erros": "Falta try-catch em operações de I/O, exceções não tratadas em APIs externas",
+      "violacoes_padroes": "Nomenclatura inconsistente, falta de documentação, código duplicado",
+      "recomendacoes": [
+        "Implementar tratamento de exceções em todas as operações críticas",
+        "Adicionar logging estruturado para facilitar debugging",
+        "Estabelecer e seguir padrões de nomenclatura consistentes",
+        "Criar documentação técnica abrangente",
+        "Implementar testes unitários para funções críticas",
+        "Refatorar código duplicado em funções reutilizáveis"
+      ]
+    },
+    "testes": {
+      "percentual_cobertura_estimado": 45,
+      "quantidade_testes": 23,
+      "quantidade_funcionalidades_sem_teste": 15,
+      "arquivos_teste": "UserServiceTest.java, PaymentControllerTest.java, ValidationUtilsTest.java",
+      "funcionalidades_sem_teste": "Sistema de notificações, processamento de pagamentos, validação de documentos",
+      "recomendacoes": [
+        "Aumentar cobertura de testes para pelo menos 80%",
+        "Implementar testes de integração para APIs críticas",
+        "Adicionar testes end-to-end para fluxos principais",
+        "Criar testes de performance para operações pesadas",
+        "Implementar testes de segurança automatizados",
+        "Configurar pipeline de CI/CD com execução automática de testes"
+      ]
+    }
+  },
+  "resumo_dashboard": {
+    "total_problemas": 28,
+    "nivel_qualidade_geral": "Médio",
+    "areas_criticas": ["Confiabilidade", "Testes"],
+    "pontuacao_geral": 58
+  }
+}
